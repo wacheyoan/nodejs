@@ -1,10 +1,11 @@
 import process from "process";
-import { ArgsParser, IArgsParser } from "./interfaces/ArgsParser";
+import { ArgsParser } from "./classes/ArgsParser";
+import { IArgsParser } from "./interfaces/ArgsParser";
 
 const OArgsParser:IArgsParser = new ArgsParser(process.argv);
 
 if(OArgsParser.isServer()){
-    
+
     const port:number = OArgsParser.getListeningPort();
     console.log(`Try listening on 127.0.0.1:${port}`)
 
