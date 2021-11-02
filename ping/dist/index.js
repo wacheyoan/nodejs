@@ -5,15 +5,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var process_1 = __importDefault(require("process"));
 var ArgsParser_1 = require("./classes/ArgsParser");
+var Client_1 = require("./classes/Client");
+var Server_1 = require("./classes/Server");
 var OArgsParser = new ArgsParser_1.ArgsParser(process_1.default.argv);
 if (OArgsParser.isServer()) {
-    var port = OArgsParser.getListeningPort();
-    console.log("Try listening on 127.0.0.1:" + port);
+    var listeningPort = OArgsParser.getListeningPort();
+    console.log("Try listening on 127.0.0.1:" + listeningPort);
+    var server = new Server_1.Server({
+        listeningPort: listeningPort,
+        onData: function (cnx, data) {
+            cnx.write('PING');
+        }
+    });
+    server.listen();
+    console.log("Server listening on 127.0.0.1:" + listeningPort);
 }
 else {
-    var addr = OArgsParser.getAddress();
-    if (addr) {
-        console.log("Vous voulez ping l'adresse \"" + addr + "\"");
+    var address = OArgsParser.getAddress();
+    if (address) {
+        var client = new Client_1.Client({
+            port: 23456,
+            address: address
+        });
+        client.ping().then(function (delay) {
+            console.log(delay + " ms");
+        });
     }
     else {
         console.log('Merci de fournir une adresse valide');
