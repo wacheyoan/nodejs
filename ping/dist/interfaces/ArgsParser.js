@@ -1,0 +1,32 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ArgsParser = void 0;
+var net_1 = require("net");
+var ArgsParser = /** @class */ (function () {
+    function ArgsParser(args) {
+        this.args = args;
+    }
+    ArgsParser.prototype.isServer = function () {
+        return this.args.indexOf('server') !== -1;
+    };
+    ArgsParser.prototype.getListeningPort = function () {
+        var port = this.args.find(function (args) {
+            return (parseInt(args) >= 10000 && parseInt(args) <= 65535);
+        });
+        if (port) {
+            return parseInt(port);
+        }
+        return 23456;
+    };
+    ArgsParser.prototype.getAddress = function () {
+        var IPv4 = this.args.find(function (arg) {
+            return (0, net_1.isIPv4)(arg);
+        });
+        if (IPv4) {
+            return IPv4;
+        }
+        return false;
+    };
+    return ArgsParser;
+}());
+exports.ArgsParser = ArgsParser;
