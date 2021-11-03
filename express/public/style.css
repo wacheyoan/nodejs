@@ -1,0 +1,104 @@
+* {
+  margin: 0;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  font-family: "Times New Roman", Times, serif;
+  background-color: lavender;
+}
+
+div.form-container {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: lightgray;
+}
+
+form input {
+  width: 75%;
+  border-radius: 16px;
+  border: 1px solid;
+  padding: 0 16px;
+}
+
+form button {
+  cursor: pointer;
+  padding: 4px 16px;
+  color: white;
+  background: black;
+  border-radius: 16px;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  height: calc(100vh - 60px);
+  overflow: auto;
+}
+
+ul li {
+  position: relative;
+  list-style-type: none;
+  max-width: 50%;
+  overflow-wrap: anywhere;
+  padding: 12px;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row-reverse;
+  gap: 5px;
+  background-color: dodgerblue;
+}
+
+ul li::after{
+  content: attr(data-timestamp);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  transform: translateY(105%);
+  color: black;
+  font-size: 0.8rem;
+}
+
+ul li img{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+
+ul li.self {
+  border: 1px solid blue;
+  border-radius: 18px 18px 0 18px;
+  background: blue;
+  color: white;
+}
+
+ul li:first-child {
+  margin-top: 16px;
+}
+
+ul li:last-child {
+  margin-bottom: 16px;
+}
+
+@media screen and (max-width: 395px) {
+  ul li {
+    width: 80%;
+    max-width: 80%;
+    justify-content: flex-end;
+  }
+}

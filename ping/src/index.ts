@@ -6,41 +6,41 @@ import { Server } from "./classes/Server";
 import { IArgsParser } from "./interfaces/ArgsParser";
 import { IServer } from "./interfaces/Server";
 
-const OArgsParser:IArgsParser = new ArgsParser(process.argv);
+const OArgsParser: IArgsParser = new ArgsParser(process.argv);
 
-if(OArgsParser.isServer()){
+if (OArgsParser.isServer()) {
 
-    const listeningPort:number = OArgsParser.getListeningPort();
+    const listeningPort: number = OArgsParser.getListeningPort();
     console.log(`Try listening on 127.0.0.1:${listeningPort}`);
 
-    const server:IServer = new Server({
+    const server: IServer = new Server({
         listeningPort,
-        onData:(cnx:Socket ,data: string) =>{
+        onData: (cnx: Socket, data: string) => {
             if (data === "PING") {
                 cnx.write("PONG")
-            }    
+            }
         }
     })
 
     server.listen();
     console.log(`Server listening on 127.0.0.1:${listeningPort}`)
-    
 
-}else{
-    const address:string | false = OArgsParser.getAddress();
 
-    if(address){
-        const client:Client = new Client({
-            port:23456,
+} else {
+    const address: string | false = OArgsParser.getAddress();
+
+    if (address) {
+        const client: Client = new Client({
+            port: 23456,
             address
         });
-        client.ping().then((delay:number|false)=>{
+        client.ping().then((delay: number | false) => {
             console.log(`${delay} ms`)
         }).catch(error => {
             console.error(error);
         })
 
-    }else{
+    } else {
         console.log('Merci de fournir une adresse valide');
     }
 }
