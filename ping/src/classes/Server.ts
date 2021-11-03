@@ -23,10 +23,9 @@ export class Server implements IServer{
             this.log(`Connexion ${socket.remoteAddress}`);
 
             socket.on('data',(data)=>{
-                this.onData(socket,'data');
+                this.onData(socket,data.toString());
             })
-            socket.on('end',() =>{this.log(`Déconnexion ${socket.remoteAddress}`);
-        });
+            socket.on('end',() =>{this.log(`Déconnexion ${socket.remoteAddress}`)});
 
             socket.on('error',(err:any)=>this.error(err))
         });
@@ -38,9 +37,7 @@ export class Server implements IServer{
     };
 
     error(...args: any[]):void{
-        this.server.on('error',(err) => {
-            console.error(err)
-        })
+        console.error(args);
     };
 
     onData(cnx: ServNet.Socket,data: string){

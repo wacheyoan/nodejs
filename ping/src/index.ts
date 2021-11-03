@@ -16,7 +16,9 @@ if(OArgsParser.isServer()){
     const server:IServer = new Server({
         listeningPort,
         onData:(cnx:Socket ,data: string) =>{
-            cnx.write('PING');
+            if (data === "PING") {
+                cnx.write("PONG")
+            }    
         }
     })
 
@@ -34,7 +36,10 @@ if(OArgsParser.isServer()){
         });
         client.ping().then((delay:number|false)=>{
             console.log(`${delay} ms`)
+        }).catch(error => {
+            console.error(error);
         })
+
     }else{
         console.log('Merci de fournir une adresse valide');
     }

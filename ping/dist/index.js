@@ -14,7 +14,9 @@ if (OArgsParser.isServer()) {
     var server = new Server_1.Server({
         listeningPort: listeningPort,
         onData: function (cnx, data) {
-            cnx.write('PING');
+            if (data === "PING") {
+                cnx.write("PONG");
+            }
         }
     });
     server.listen();
@@ -29,6 +31,8 @@ else {
         });
         client.ping().then(function (delay) {
             console.log(delay + " ms");
+        }).catch(function (error) {
+            console.error(error);
         });
     }
     else {

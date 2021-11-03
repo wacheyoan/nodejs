@@ -36,11 +36,9 @@ var Server = /** @class */ (function () {
         this.server.on('connection', function (socket) {
             _this.log("Connexion " + socket.remoteAddress);
             socket.on('data', function (data) {
-                _this.onData(socket, 'data');
+                _this.onData(socket, data.toString());
             });
-            socket.on('end', function () {
-                _this.log("D\u00E9connexion " + socket.remoteAddress);
-            });
+            socket.on('end', function () { _this.log("D\u00E9connexion " + socket.remoteAddress); });
             socket.on('error', function (err) { return _this.error(err); });
         });
     }
@@ -57,9 +55,7 @@ var Server = /** @class */ (function () {
         for (var _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        this.server.on('error', function (err) {
-            console.error(err);
-        });
+        console.error(args);
     };
     ;
     Server.prototype.onData = function (cnx, data) {
