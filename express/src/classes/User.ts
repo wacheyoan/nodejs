@@ -14,7 +14,6 @@ export class User implements IUser{
         this.id = config.id;
         this.imgUrl = config.imgUrl;
         this.collection = config.collection;
-
         this.collection.add(this);
     }
 
@@ -26,7 +25,7 @@ export class User implements IUser{
     }
     leaveRoom(roomId: string): void {
         if(this.rooms && roomId in this.rooms){
-            this.rooms.splice(this.rooms.indexOf(roomId));
+            this.rooms.splice(this.rooms.indexOf(roomId),1);
         }
     }
     

@@ -8,88 +8,20 @@
     <link rel="stylesheet" href="/sources/style.css" />
   </head>
   <body>
-    <ul id="messages"></ul>
-    <div class="form-container">
-      <form action="" id="form2">
-        <input type="text" placeholder="pseudo" />
-        <button type="submit">Log in</button>
-      </form>
+    <div id="main-container">
+      <div id="rooms"></div>
+      <div id="chat">
+        <ul id="messages"></ul>
+        <div class="form-container">
+          <form action="" id="form2">
+            <input type="text" placeholder="pseudo" />
+            <button type="submit">Log in</button>
+          </form>
+        </div>
+      </div>
+      <div id="users"></div>
     </div>
     <script src="/sources/socket.io.js"></script>
-    <script>
-      var socket = io();
-      var messages = document.getElementById("messages");
-
-      var formLogIn = document.getElementById("form2");
-      var input2 = formLogIn.querySelector("input");
-
-      let form = document.createElement("form");
-      form.id = "form";
-
-      let input = document.createElement("input");
-      input.type = "text";
-      input.id = "input";
-
-      let button = document.createElement("button");
-      button.type = "submit";
-      button.textContent = "Send";
-
-      form.appendChild(input);
-      form.appendChild(button);
-
-      formLogIn.addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (input2.value) {
-          socket.emit("log", input2.value);
-          formLogIn.remove();
-          document.querySelector("body").appendChild(form);
-        }
-      });
-
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (input.value) {
-          socket.emit("chat", input.value);
-          input.value = "";
-        }
-      });
-
-      function appendLi(msg, classes, img,timer) {
-        var item = document.createElement("li");
-        item.textContent = msg;
-
-        let date = new Date(timer);
-        let minutes = date.getMinutes();
-        if(minutes < 10){
-          minutes = "0"+minutes;
-        }
-        let hours = `${date.getHours()}:${minutes}:${date.getSeconds()}`;
-        item.dataset.timestamp = hours;
-
-        for (let cls in classes) {
-          item.classList.add(classes);
-        }
-
-        if (img) {
-          var image = document.createElement("img");
-          image.src = img;
-
-          item.appendChild(image);
-        }
-
-        messages.appendChild(item);
-        item.scrollIntoView();
-      }
-
-      socket.on("chat", function ({ user, msg,timer }) {
-        appendLi(msg, ["self"], user.imgUrl,timer);
-      });
-
-      socket.on("log", function ({user,timer}) {
-        let msg = `${user.pseudo} s'est connecté !`;
-        appendLi(msg, [], user.imgUrl,timer);
-      });
-
-    </script>
+    <script src="/sources/script.js"></script>
   </body>
 </html>

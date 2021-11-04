@@ -24,6 +24,7 @@ export class UserCollection implements IUserCollection{
     add(user: IUser): void {
         if(!(user.id in this.users)){
             this.ids.push(user.id);
+            this.users[user.id] = user;
         }
     }
     del(id: string): void {
