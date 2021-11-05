@@ -1,5 +1,15 @@
+:root{
+  --black : #18191a;
+  --blue : rgb(0, 132, 255);
+  --gray:#3E4042;
+  --text-primary:#E4E6EB;
+  --comment-bg:#3A3B3C;
+  --white:white;
+}
+
 * {
   margin: 0;
+  padding-inline-start: 0;
 }
 
 body {
@@ -7,27 +17,28 @@ body {
   overflow: hidden;
   font-size: 0.9375rem;
   font-family: "Times New Roman", Times, serif;
-  background-color: lavender;
+  background-color: var(--black);
 }
 
 #main-container {
   display: grid;
   grid-auto-columns: 1fr;
   grid-auto-rows: 1fr;
-  grid-template-columns: 10% 1fr 20%;
+  grid-template-columns: 10% 1fr 10%;
   gap: 0px 0px;
-  height: 100%;
 }
 
 #rooms {
   grid-area: 1 / 1 / 2 / 2;
-  background-color: black;
+  background-color:var(--black);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
   padding: 16px;
   height: 100%;
+  justify-content: center;
+  overflow: auto;
 }
 
 #rooms img,
@@ -44,9 +55,10 @@ body {
 
 #users .user {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
   gap: 16px;
+  flex-direction: column;
 }
 
 #chat {
@@ -56,7 +68,7 @@ body {
 .form-container {
   position: fixed;
   padding: 16px 4px;
-  background: black;
+  background: var(--black);
   bottom: 0;
   right: 0;
   width: 100%;
@@ -69,29 +81,37 @@ body {
   gap: 24px;
   align-content: center;
   align-items: flex-end;
-  margin: 8px;
+  margin: 16px;
+  margin-right: 0;
   overflow: auto;
   height: calc(100vh - 35px);
 }
 
 form {
   display: grid;
-  grid-template-columns: 90% 1fr;
+  grid-template-columns:
+    60% 125px;
   grid-auto-columns: 1fr;
   grid-auto-rows: 1fr;
   gap: 0px 16px;
   grid-auto-flow: row;
+  justify-content: center;
+  align-items: center;
 }
 
 form input {
   grid-area: 1 / 1 / 2 / 2;
   border-radius: 16px;
   padding: 0 16px;
+  width: 85%;
+  background-color: var(--comment-bg);
+  color: var(--text-primary);
+  border: 1px transparent;
 }
 
 form button {
   color: white;
-  background: black;
+  background: var(--black);
   border-radius: 16px;
   cursor: pointer;
   border: 1px solid white;
@@ -110,18 +130,40 @@ form button {
   align-items: center;
   flex-direction: row-reverse;
   gap: 8px;
-  background: blue;
+  background-color: var(--gray);
   padding: 16px;
   border-radius: 8px;
   width: fit-content;
+  margin-right: 16px;
+}
+
+#messages li.other {
+  float: left;
+  margin-right: auto;
+  color: var(--text-primary);
+}
+
+#messages li.self {
+  background: var(--blue);
+  color:  var(--white);
+  font-size: 0.8rem;
 }
 
 #messages li::after {
   content: attr(data-timestamp);
   position: absolute;
+  transform: translateY(100%);
+}
+
+#messages li.self::after {
   right: 0;
   bottom: 0;
   transform: translateY(100%);
+}
+
+#messages li.other::after {
+  left: 0;
+  bottom: 0;
 }
 
 .room {
@@ -141,9 +183,46 @@ form button {
 #users {
   grid-area: 1 / 3 / 2 / 4;
   height: 100%;
-  background-color: black;
+  background-color: var(--black);
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 16px;
+  max-height: 100vh;
+  overflow: auto;
+  justify-content: center;
+  align-items: center;
+}
+
+#messages li:first-child {
+  margin-top: 16px;
+}
+
+#messages::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #f5f5f5;
+}
+
+#messages::-webkit-scrollbar {
+  width: 6px;
+  background-color: #f5f5f5;
+}
+
+#messages::-webkit-scrollbar-thumb {
+  background-color: #000000;
+}
+
+@media screen and (max-width: 745px) {
+  #messages li {
+    width: 60%;
+  }
+  #messages li.other {
+    justify-content: flex-end;
+  }
+}
+
+@media screen and (max-width: 365px) {
+  #messages li {
+    width: 90%;
+  }
 }

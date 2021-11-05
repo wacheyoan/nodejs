@@ -75,14 +75,15 @@ function appendLi(msg, classes, img,timer) {
 }
 
 socket.on("chat", function ({msg,user}) {
-  appendLi(msg.msg, ["self"], user.imgUrl,msg.timestamp);
+  if(msg.roomId === selectedRoom){
+    appendLi(msg.msg, [user.id !== socket.id ? 'other' :'self'], user.imgUrl,msg.timestamp);
+  }
 });
 
-socket.on("logged", function ({user,timer,selectedRoom}) {
-  let msg = `${user.pseudo} s'est connecté !`;
-  appendLi(msg, [], user.imgUrl,timer);
+socket.on("logged", function ({msg,user}) {
+  appendLi(msg.msg, [user.id !== socket.id ? 'other' :'self'], user.imgUrl,msg.timestamp);
   formLogIn.replaceWith(form);
-  selectedRoom = selectedRoom;
+  selectedRoom = msg.roomId;
 });
 
 socket.on('initRooms',function(rooms){
@@ -121,6 +122,18 @@ socket.on('initRooms',function(rooms){
 
     count++;
   }
+})
+
+socket.on('disconnected',({msg,user,timer})=>{
+  appendLi(msg, [user !== socket.id ? 'other' :'self'], user.imgUrl,timer);
+  document.getElementById(user.id).remove();
+})
+
+socket.on('initMsg',(msgs) =>{
+  document.getElementById('messages').innerHTML = "";
+  msgs.map(msg => {
+    appendLi(msg.msg,[msg.userId !== socket.id ? 'other' :'self'],'tristan.jpg',msg.timestamp);
+  })
 })
 
 socket.on('initUsers',(users)=>{

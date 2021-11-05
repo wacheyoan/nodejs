@@ -13,18 +13,19 @@ export class User implements IUser{
         this.pseudo = config.pseudo;
         this.id = config.id;
         this.imgUrl = config.imgUrl;
+        this.rooms = [];
         this.collection = config.collection;
         this.collection.add(this);
     }
 
     rooms?: string[] | undefined;
     joinRoom(roomId: string): void {
-        if(this.rooms && !(roomId in this.rooms)){
+        if(this.rooms && !(this.rooms.includes(roomId))){
             this.rooms.push(roomId);
         }
     }
     leaveRoom(roomId: string): void {
-        if(this.rooms && roomId in this.rooms){
+        if(this.rooms && this.rooms.includes(roomId)){
             this.rooms.splice(this.rooms.indexOf(roomId),1);
         }
     }

@@ -1,3 +1,5 @@
+import { IMsg } from "./Msg";
+
 export interface IRoom {
     /**
     * Identifiant du salon
@@ -42,6 +44,12 @@ export interface IRoom {
     * @memberof IRoom
     */
     readonly urlImage: string | false
+
+    /**
+     * Tableau comprenant tous les messages de la room
+     */
+    messages:IMsg[];
+
     /**
     * Joindre l'utilisateur d'identifiant `userId` à ce salon
     *
@@ -57,4 +65,11 @@ export interface IRoom {
     * @memberof IRoom
     */
     leaveUser (userId: string): void
+
+    /**
+     * Ajoute un nouveau message à la room
+     * @param msg 
+     */
+    addMsg(msg:IMsg):void
+
    }

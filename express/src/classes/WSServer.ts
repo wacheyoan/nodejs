@@ -34,25 +34,39 @@ export class WSServer implements IWSServer {
 
         this.server.on('connection', (socket: Socket) => {
 
-            socket.on('log', (pseudo: string) => this.log(socket,pseudo));
+            socket.on('log', (pseudo: string) => this.log(socket, pseudo));
 
-            socket.on('chat', (msg: any) => this.chat(socket,msg));
+            socket.on('chat', (msg: any) => this.chat(socket, msg));
 
-            socket.on('chooseRoom', (selectedRoom: string) => this.chooseRoom(socket,selectedRoom))
+            socket.on('chooseRoom', (selectedRoom: string) => this.chooseRoom(socket, selectedRoom));
+
+            socket.on('disconnect', () => this.disconnect(socket))
 
         })
 
     }
 
-    log(socket:Socket,pseudo: string) {
+    log(socket: Socket, pseudo: string) {
+        this.handleLog(socket,pseudo);
+        this.handleRooms(socket,this.rooms);
+        this.handleMsgs(socket,this.defaultRoom);
+        this.handleUsers(this.defaultRoom);
+    }
+
+    handleLog(socket:Socket,pseudo:string){
+
         let user = new User({ pseudo, id: socket.id, collection: this.onlineUsers, imgUrl: 'tristan.jpg' });
         this.defaultRoom.joinUser(user.id);
-
+        user.joinRoom(this.defaultRoom.id);
         socket.join(this.defaultRoom.id);
 
-        this.server.to(this.defaultRoom.id).emit('logged', { user: { pseudo }, timer: Date.now(),selectedRoom:this.defaultRoom.id });
-        socket.emit('initRooms', this.rooms);
-        socket.emit('initUsers', this.defaultRoom.joinedUsers.map(id => {
+        let msg = new Msg(`${user.pseudo} s'est connecté`,user,this.defaultRoom.id);
+        this.server.to(this.defaultRoom.id).emit('logged', {msg:msg,user:{ id: user.id, pseudo: user.pseudo, imgUrl: user.imgUrl }});
+        this.defaultRoom.addMsg(msg);
+    }
+
+    handleUsers(room:IRoom) {
+        this.server.to(room.id).emit('initUsers', room.joinedUsers.map(id => {
             //reference circular :'(
             let user = this.onlineUsers.get(id);
             if (user) {
@@ -61,32 +75,69 @@ export class WSServer implements IWSServer {
         }));
     }
 
-    chat(socket:Socket,msg:any){
+    handleMsgs(socket:Socket,room:IRoom){
+        socket.emit('initMsg',room.messages);
+    }
+
+    handleRooms(socket:Socket,rooms:IRoomCollection){
+        socket.emit('initRooms', rooms);
+    }
+
+    chat(socket: Socket, msg: any) {
 
         let user = this.onlineUsers.get(socket.id);
         let room = this.rooms.get(msg.selectedRoom);
 
         if (user && room) {
-            let message = new Msg(msg.msg, user,room.id);
+            let message = new Msg(msg.msg, user, room.id);
             this.server.to(room.id).emit('chat', { msg: message, user: { id: user.id, pseudo: user.pseudo, imgUrl: user.imgUrl } })
+            room.addMsg(message);
         }
     }
 
-    chooseRoom(socket:Socket,selectedRoom:string) {
-        
+    disconnect(socket: Socket) {
+
+        let user = this.onlineUsers.get(socket.id);
+
+        if (user) {
+            user.rooms?.map((room) => {
+                //ts me faisait ch***
+                if (user) {
+                    socket.to(room).emit('disconnected',
+                        {
+                            msg: `${user.pseudo} s'est déconnecté`,
+                            user: { id: user.id, pseudo: user.pseudo, imgUrl: user.imgUrl },
+                            timer:Date.now()
+                        });
+
+                    let Oroom = this.rooms.get(room);
+
+                    user.leaveRoom(room);
+                    if(Oroom){
+                        Oroom.leaveUser(user.id);
+                    }
+                    
+                }
+            });
+
+            this.onlineUsers.del(socket.id);
+
+        }
+
+    }
+
+    chooseRoom(socket: Socket, selectedRoom: string) {
+
         let room = this.rooms.get(selectedRoom);
         let user = this.onlineUsers.get(socket.id);
 
         if (room && user) {
             room.joinUser(user.id);
+            user.joinRoom(room.id);
+
             socket.join(room.id);
-            socket.emit('initUsers', room.joinedUsers.map(id => {
-                //reference circular :'(
-                let user = this.onlineUsers.get(id);
-                if (user) {
-                    return { id: user.id, pseudo: user.pseudo, imgUrl: user.imgUrl };
-                }
-            }))
+            this.handleUsers(room);
+            this.handleMsgs(socket,room);
         }
     }
 
