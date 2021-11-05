@@ -30,6 +30,7 @@ export class UserCollection implements IUserCollection{
     del(id: string): void {
         if(id in this.users){
             this.ids.splice(this.ids.indexOf(id),1);
+            delete this.users[id];
         }
     }
 

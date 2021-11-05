@@ -40,7 +40,9 @@ export class WSServer implements IWSServer {
 
             socket.on('chooseRoom', (selectedRoom: string) => this.chooseRoom(socket, selectedRoom));
 
-            socket.on('disconnect', () => this.disconnect(socket))
+            socket.on('disconnect', () => this.disconnect(socket));
+
+            socket.on('addRoom',(nameRoom:string) => this.addRoom(socket,nameRoom))
 
         })
 
@@ -103,7 +105,7 @@ export class WSServer implements IWSServer {
             user.rooms?.map((room) => {
                 //ts me faisait ch***
                 if (user) {
-                    socket.to(room).emit('disconnected',
+                    socket.broadcast.emit('disconnected',
                         {
                             msg: `${user.pseudo} s'est déconnecté`,
                             user: { id: user.id, pseudo: user.pseudo, imgUrl: user.imgUrl },
@@ -121,7 +123,6 @@ export class WSServer implements IWSServer {
             });
 
             this.onlineUsers.del(socket.id);
-
         }
 
     }
@@ -132,13 +133,23 @@ export class WSServer implements IWSServer {
         let user = this.onlineUsers.get(socket.id);
 
         if (room && user) {
+
             room.joinUser(user.id);
             user.joinRoom(room.id);
 
             socket.join(room.id);
             this.handleUsers(room);
             this.handleMsgs(socket,room);
+
         }
     }
+
+    addRoom(socket:Socket,nameRoom:string){
+        let newRoom = new Room({id:uuidv4(),title:nameRoom,usersCollection:this.onlineUsers,urlImage:'/sources/default.png'});
+        this.rooms.add(newRoom);
+
+        this.handleRooms(socket,this.rooms);
+    }
+
 
 }

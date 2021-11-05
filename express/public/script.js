@@ -13,6 +13,7 @@ form.id = "form";
 let input = document.createElement("input");
 input.type = "text";
 input.id = "input";
+input.placeholder = "Votre message";
 
 let button = document.createElement("button");
 button.type = "submit";
@@ -88,6 +89,7 @@ socket.on("logged", function ({msg,user}) {
 
 socket.on('initRooms',function(rooms){
 
+  document.getElementById('rooms').innerHTML = "";
   let roomsElement = document.getElementById('rooms');
   //voir autrement
   let count = 0;
@@ -122,7 +124,26 @@ socket.on('initRooms',function(rooms){
 
     count++;
   }
+  addRoomAdder();
 })
+
+function addRoomAdder(){
+  let roomsElement = document.getElementById('rooms');
+
+  let roomElement = document.createElement('div');
+  roomElement.classList.add('room');
+  roomElement.id = "addRoom";
+
+  let img = document.createElement('img');
+  img.src = '/sources/plus.png';
+
+  roomElement.addEventListener('click',() =>{
+    socket.emit('addRoom','testAddRoom');
+  })
+
+  roomElement.appendChild(img)
+  roomsElement.appendChild(roomElement);
+}
 
 socket.on('disconnected',({msg,user,timer})=>{
   appendLi(msg, [user !== socket.id ? 'other' :'self'], user.imgUrl,timer);
@@ -142,8 +163,7 @@ socket.on('initUsers',(users)=>{
   usersElement.innerHTML = "";
 
   for(let user of users){
-
-    if(!document.getElementById(user.id)){
+    if(user && !document.getElementById(user.id)){
       let userElement = document.createElement('div');
       userElement.classList.add('user');
       userElement.id = user.id;

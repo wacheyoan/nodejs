@@ -31,6 +31,7 @@ export class RoomCollection implements IRoomCollection{
     del(id: string): void {
         if(id in this.rooms){
             this.ids.splice(this.ids.indexOf(id),1);
+            delete this.rooms[id];
         }
     }
 
